@@ -39,7 +39,7 @@
 1.2 Хід роботи
 
 	1.2.1 Посилання на YouTube
-	URL: 
+	URL: https://youtu.be/iKSKLlM9C5U
 
 	1.2.2 Особливості мови Go
 
