@@ -76,6 +76,6 @@
 - Діаграма структури бази даних:
   - Таблиці: Users, Aquariums, Devices, Sensors, Logs.
 
-Контакти  
+### Контактна інформація  
 Розробник: Товстуха Іван  
-Email: ivan.tovstukha@nure.ua
+Email: `ivan.tovstukha@nure.ua`
