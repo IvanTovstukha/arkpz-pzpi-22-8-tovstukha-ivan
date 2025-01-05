@@ -621,4 +621,4 @@ function delay(ms) {
      114. 
      115. module.exports = router;
 
-     
+     Посилання на відеозапис: 
