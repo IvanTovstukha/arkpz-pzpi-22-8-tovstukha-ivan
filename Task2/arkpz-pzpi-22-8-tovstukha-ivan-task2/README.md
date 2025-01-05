@@ -68,7 +68,7 @@ AquaSense – це програмна система для автоматиза
    - Створіть базу даних MySQL з назвою AquaSense.
    - Використовуйте SQL-скрипт для створення таблиць:
 
-   ```
+   ```sql
    CREATE TABLE Users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL,
@@ -133,16 +133,16 @@ AquaSense – це програмна система для автоматиза
    git clone https://github.com/NureTovstukhaIvan/AquaSense.git
    ```
 2. Перейдіть до директорії проєкту:
-   ```
+   ```bash
    cd aquasense
    ```
 3. Встановіть залежності:
-   ```
+   ```bash
    npm install
    ```
 4. Запустіть сервер:
 
-```
+```bash
 npm start
 ```
 
