@@ -153,7 +153,7 @@ npm start
 - Маршрут: `/users/register`
   Тіло запиту:
 
-```
+```json
 {
   "username": "john_doe",
   "email": "john@example.com",
@@ -167,7 +167,7 @@ npm start
 - Маршрут: `/users/login`
   Тіло запиту:
 
-```
+```json
 {
   "email": "john@example.com",
   "password": "password123"
@@ -185,7 +185,7 @@ npm start
 - Маршрут: `/aquariums`
   Тіло запиту:
 
-```
+```json
 {
   "user_id": 1,
   "name": "My Aquarium",
@@ -209,7 +209,7 @@ npm start
 - Маршрут: `/sensors/:id`
   Тіло запиту:
 
-```
+```json
 {
   "value": 26.5
 }
@@ -221,7 +221,7 @@ npm start
 - Маршрут: `/devices/control`
   Тіло запиту:
 
-```
+```json
 {
   "device_name": "thermostat",
   "action": "on"
@@ -234,7 +234,7 @@ npm start
 - Маршрут: `/devices/control`
   Тіло запиту:
 
-```
+```json
 {
   "device_name": "thermostat",
   "action": "off"
@@ -257,7 +257,7 @@ npm start
 - Маршрут: `/logs`
   Тіло запиту:
 
-```
+```json
 {
   "sensor_id": 1,
   "message": "Temperature corrected from 30 to 28"
