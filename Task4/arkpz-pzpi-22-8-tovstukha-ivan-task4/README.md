@@ -122,6 +122,6 @@ void updateDisplay() {
 3. Налаштувати MySQL базу даних
 4. Запустити сервер за допомогою node index.js
 
-## Контактна інформація
-**Розробник**: Товстуха Іван  
-**Email**: ivan.tovstukha@nure.ua
+### Контактна інформація  
+Розробник: Товстуха Іван  
+Email: `ivan.tovstukha@nure.ua`
