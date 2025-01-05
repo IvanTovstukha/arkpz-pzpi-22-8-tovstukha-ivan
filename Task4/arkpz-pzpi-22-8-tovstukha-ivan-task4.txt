@@ -495,3 +495,5 @@
      150.     console.log(`Swagger UI is available at http://localhost:${PORT}/api-docs`);
      151. });
      152.
+
+Посилання на відеозапис: 
