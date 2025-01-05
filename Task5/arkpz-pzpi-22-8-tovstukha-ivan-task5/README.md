@@ -195,7 +195,6 @@ const char\* mqtt_server = "test.mosquitto.org";
 
 Проєкт ліцензований під ліцензією Mit. Apache License 2.0
 
-## Контактна інформація
-
-**Розробник**: Товстуха Іван
-**Email**: ivan.tovstukha@nure.ua
+### Контактна інформація  
+Розробник: Товстуха Іван  
+Email: `ivan.tovstukha@nure.ua`
