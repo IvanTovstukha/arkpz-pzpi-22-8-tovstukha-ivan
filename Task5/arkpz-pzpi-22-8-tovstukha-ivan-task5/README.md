@@ -63,7 +63,7 @@ git clone https://github.com/NureTovstukhaIvan/AquaSense.git
 
 Встановіть необхідні залежності:
 
-      ```
+      ```bash
       cd AquaSense
       npm install
       npm install express
@@ -75,14 +75,14 @@ git clone https://github.com/NureTovstukhaIvan/AquaSense.git
 
 Створіть базу даних у MySQL:
 
-      ```
+      ```sql
 
       CREATE DATABASE AquaSense;
       ```
 
 Імпортуйте таблиці та структуру бази даних:
 
-      ```
+      ```sql
 
       USE AquaSense;
 
@@ -132,7 +132,7 @@ FOREIGN KEY (aquarium_id) REFERENCES Aquariums(id) ON DELETE CASCADE
 
 ```
 Налаштуйте конфігурацію бази даних у файлі src/config/db.js:
-```
+```js
 
 const pool = mysql.createPool({
 host: 'localhost',
@@ -148,7 +148,7 @@ queueLimit: 0
 
 ### Крок 3: Запуск серверної частини
 Запустіть сервер командою:
-```
+```bash
 
 node index.js
 
@@ -162,7 +162,7 @@ http://localhost:3000/api-docs
 
 Відкрийте код IoT у Arduino IDE.
 Налаштуйте параметри підключення:
-```
+```js
 
 const char* ssid = "YOUR_WIFI_SSID";
 const char* password = "YOUR_WIFI_PASSWORD";
