@@ -129,18 +129,21 @@ status ENUM('on', 'off') DEFAULT 'off',
 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 FOREIGN KEY (aquarium_id) REFERENCES Aquariums(id) ON DELETE CASCADE
 );
+
 ```
 Налаштуйте конфігурацію бази даних у файлі src/config/db.js:
 ```
+
 const pool = mysql.createPool({
-    host: 'localhost',
-    user: 'root',
-    password: 'yourpassword',
-    database: 'AquaSense',
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0
-}); 
+host: 'localhost',
+user: 'root',
+password: 'yourpassword',
+database: 'AquaSense',
+waitForConnections: true,
+connectionLimit: 10,
+queueLimit: 0
+});
+
 ```
 
 ### Крок 3: Запуск серверної частини
@@ -148,6 +151,7 @@ const pool = mysql.createPool({
 ```
 
 node index.js
+
 ```
 Переконайтеся, що сервер доступний за адресою:
 http://localhost:3000
@@ -159,9 +163,11 @@ http://localhost:3000/api-docs
 Відкрийте код IoT у Arduino IDE.
 Налаштуйте параметри підключення:
 ```
+
 const char* ssid = "YOUR_WIFI_SSID";
 const char* password = "YOUR_WIFI_PASSWORD";
-const char* mqtt_server = "test.mosquitto.org";
+const char\* mqtt_server = "test.mosquitto.org";
+
 ```
 Завантажте код на ESP32.
 Переконайтеся, що пристрій успішно підключається до Wi-Fi та брокера MQTT.
@@ -183,3 +189,4 @@ const char* mqtt_server = "test.mosquitto.org";
 
 **Розробник**: Товстуха Іван
 **Email**: ivan.tovstukha@nure.ua
+```
