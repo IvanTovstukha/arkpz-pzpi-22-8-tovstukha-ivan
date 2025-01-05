@@ -161,6 +161,7 @@ node index.js
 
 Переконайтеся, що сервер доступний за адресою:
 http://localhost:3000
+
 Swagger-документація API доступна за адресою:
 http://localhost:3000/api-docs
 
