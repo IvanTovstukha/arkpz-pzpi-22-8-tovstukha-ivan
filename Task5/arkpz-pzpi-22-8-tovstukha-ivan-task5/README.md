@@ -89,8 +89,6 @@ CREATE DATABASE AquaSense;
 
 ```sql
 
-USE AquaSense;
-
 CREATE TABLE Users (
 id INT AUTO_INCREMENT PRIMARY KEY,
 username VARCHAR(50) NOT NULL,
