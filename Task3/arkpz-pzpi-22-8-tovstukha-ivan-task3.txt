@@ -1,0 +1,624 @@
+﻿МІНІСТЕРСТВО ОСВІТИ І НАУКИ УКРАЇНИ
+ХАРКІВСЬКИЙ НАЦІОНАЛЬНИЙ УНІВЕРСИТЕТ РАДІОЕЛЕКТРОНІКИ
+
+
+Кафедра "Програмної інженерії"
+
+
+
+
+ЗВІТ
+З лабораторної роботи №3
+з дисципліни
+"Аналіз та рефакторинг коду"
+
+
+
+Виконав:                                                                                                  Перевірив                      
+ст. гр. ПЗПІ-22-8                                                                      ст. викладач каф. ПІ
+Товстуха Іван                                                                                     Сокорчук І. П.
+
+
+
+
+
+
+
+
+
+
+
+
+Харків 2024
+
+3 РОЗРОБКА БІЗНЕС-ЛОГІКИ ТА ФУНКЦІЙ АДМІНІСТРУВАННЯ СЕРВЕРНОЇ ЧАСТИНИ ПРОГРАМНОЇ СИСТЕМИ
+
+3.1	Мета роботи
+     Розробити бізнес-логіку та функції адміністрування серверної частини програмної системи, що призначена для проведення рекламної акції.
+3.2	Хід роботи
+3.2.1	Опис інженерних рішень
+     Система AquaSense побудована на клієнт-серверній архітектурі, яка забезпечує ефективну взаємодію між користувачами, IoT-пристроями та серверною частиною. Її гнучка архітектура дозволяє інтегрувати нові функції та адаптувати систему до змінних потреб користувачів, забезпечуючи при цьому високу продуктивність і зручність у використанні. Центральним компонентом виступає серверна частина, що обробляє дані, реалізує бізнес-логіку та надає доступ до функціональності через REST API. Серверна платформа побудована на базі Node.js, що дозволяє обробляти великий потік запитів завдяки асинхронній архітектурі. Для забезпечення зберігання даних використовується MySQL, яка гарантує надійність, масштабованість і ефективність роботи з великими обсягами даних.
+     Основними елементами архітектури є бізнес-логіка, модуль адміністрування та REST API. Модуль бізнес-логіки реалізує управління параметрами акваріумів і автоматизацію роботи пристроїв. Він відповідає за аналіз даних сенсорів, прийняття рішень про ввімкнення або вимкнення пристроїв і генерування логів про події системи. Модуль адміністрування забезпечує управління користувачами та пристроями. Він дозволяє адміністраторам здійснювати авторизацію, налаштовувати системні параметри, переглядати активність і управляти пристроями та сенсорами. REST API забезпечує зв'язок між сервером і клієнтськими додатками. 
+     API реалізує операції з управління акваріумами, сенсорами та пристроями, дозволяючи отримувати й оновлювати інформацію.
+     Комунікація в системі здійснюється через REST API, який використовує JSON як основний формат обміну даними. Адміністратори можуть виконувати запити для створення, редагування та видалення акваріумів, пристроїв і сенсорів, а також для отримання історичних даних і логів. IoT-пристрої використовують протокол MQTT для передачі даних сенсорів і отримання команд від сервера. Це забезпечує швидкий обмін інформацією та інтеграцію реального часу.
+     Безпека системи реалізована через хешування паролів за допомогою бібліотеки bcrypt.js, авторизацію через JWT (JSON Web Tokens) і розмежування доступу залежно від ролей користувачів. Це дозволяє обмежувати доступ до чутливої інформації та функціональності для користувачів із різними рівнями прав.
+     Масштабованість системи досягається завдяки гнучкості архітектури, яка дозволяє легко додавати нових користувачів, пристрої чи акваріуми без суттєвих змін у коді. MySQL забезпечує обробку великих обсягів даних, а асинхронна архітектура Node.js дозволяє підтримувати високе навантаження. Продуктивність системи оптимізується через індексацію в базі даних і використання транзакцій для забезпечення цілісності даних.
+     Система також гарантує надійність через автоматичне резервне копіювання бази даних і запис логів усіх операцій. Це дозволяє аналізувати виконані дії та відновлювати дані в разі збою. Інтерфейс для адміністраторів представлений у вигляді веб-додатку або доступу до REST API, тоді як користувачі можуть взаємодіяти з системою через мобільний додаток або веб-інтерфейс.
+     Обрані інженерні рішення забезпечують високу ефективність роботи системи AquaSense, її масштабованість, гнучкість і надійність. 
+     
+3.2.2	Бізнес-логіка
+     Програмна система AquaSense автоматизує моніторинг та управління параметрами акваріумів, забезпечуючи їх підтримку в заданих межах. Основна бізнес-логіка полягає у взаємодії між користувачем, IoT-пристроями та сервером для досягнення стабільних умов в акваріумах. Система збирає дані сенсорів, таких як температура, рівень кисню та pH, за допомогою IoT-пристроїв. Отримані показники передаються на сервер через протокол MQTT для подальшої обробки. Сервер аналізує дані, порівнюючи їх із заданими нормами. У разі виявлення відхилень сервер надсилає команди IoT-пристроям для активації відповідних механізмів, наприклад, термостата, аератора чи pH-контролера.
+     Після корекції параметрів система реєструє зміну в базі даних і відключає пристрої, коли показники повертаються до норми. Логування всіх подій дозволяє зберігати історичні дані, які адміністратори можуть аналізувати через веб-інтерфейс чи API. Користувачі отримують доступ до налаштувань параметрів акваріумів, можуть додавати або видаляти сенсори й пристрої, а також контролювати їхній статус у режимі реального часу.
+     Система поєднує автоматизацію процесів, гнучке управління та зручність аналізу даних, що дозволяє ефективно забезпечувати стабільність і комфортне середовище в акваріумах без значного втручання користувача.
+     Для забезпечення стабільного моніторингу та корекції параметрів акваріуму у системі AquaSense використано ряд математичних та програмних методів:
+1) Генерація випадкових значень для сенсорів.
+     Для імітації реальних умов акваріуму на IoT-пристрої ESP32 використовується функція random, яка додає випадкові відхилення до показників сенсорів. 
+     Значення генеруються як у межах норми, так і з певними відхиленнями, що дозволяє моделювати ситуації, які вимагають корекції.
+	temperature += random(-15, 15) * 0.1;
+     Цей підхід забезпечує динамічність симуляції, оскільки показники змінюються подібно до реальних сенсорів.
+2) Перевірка меж значень (норми).
+     На серверному рівні перевіряється, чи значення сенсора перебуває в межах допустимого діапазону. Якщо значення виходить за межі, активується відповідний пристрій для корекції.
+if (value >= range[0] && value <= range[1]) {
+    // Значення в межах норми
+} else {
+    // Значення поза межами
+}
+     Наприклад, температура повинна бути в межах 22-28 °C. Якщо значення перевищує ці межі, пристрій (наприклад, термостат) увімкнеться для стабілізації параметра.
+3) Корекція значень сенсорів.
+     Коли значення виходить за межі, воно коригується до найближчої межі (мінімум або максимум). Формула корекції виглядає так:
+const newValue = value < range[0] 
+? range[0] : range[1];
+     Цей підхід забезпечує, що параметр сенсора завжди повертається до допустимого діапазону.
+4) Оновлення значень у базі даних.
+     Після корекції значення сенсора сервер оновлює його в базі даних для збереження актуальної інформації. Наприклад:
+     
+await db.query('UPDATE Sensors SET value = ? 
+WHERE type = ?', [newValue, sensorType]);
+     Ця операція дозволяє зберігати поточні показники сенсорів для подальшого аналізу або використання.
+5) Періодичне оновлення.
+     Для регулярного оновлення даних сенсорів і виконання корекції на ESP32 використовується функція таймера. Таймер базується на функції millis, яка відстежує час роботи пристрою.
+if (millis() - lastSensorUpdate > sensorInterval) {
+    lastSensorUpdate = millis();
+    updateSensors();
+}
+     Цей метод забезпечує рівномірну перевірку сенсорів через задані проміжки часу.
+6) Логічні операції для управління пристроями.
+     При виявленні значення поза межами норми або отриманні MQTT-повідомлення сервер активує або вимикає пристрої. Це досягається за допомогою умов:
+if (message == "thermostat_on") {
+    thermostat_status = true;
+    digitalWrite(thermostat_led, HIGH);
+} else if (message == "thermostat_off") {
+    thermostat_status = false;
+    digitalWrite(thermostat_led, LOW);
+}
+     Коли пристрій активується, змінюється його стан, а також активується світлодіод, що візуально відображає роботу пристрою.
+7) Обробка черги сенсорів (цикл).
+     Для циклічного моніторингу сенсорів застосовується черга, яка дозволяє перевіряти кожен сенсор по черзі (наприклад, температура → кисень → pH). Це реалізовано за допомогою операції залишку від ділення:
+	currentSensor = (currentSensor + 1) % 3;
+     Цей алгоритм забезпечує безперервний цикл моніторингу без потреби в додаткових умовах.
+8) Таймінги в системі.
+     Для керування затримками використовується функція паузи. Наприклад, перед переходом до наступного сенсора чи перед вимкненням пристрою використовується:
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+     Затримки допомагають уникнути конфліктів і забезпечують стабільність системи.
+     Вся логіка системи AquaSense базується на простих, але ефективних математичних і програмних методах. Генерація випадкових значень, перевірка діапазонів, корекція параметрів, оновлення бази даних і циклічний моніторинг працюють разом для забезпечення стабільної роботи системи.
+3.2.3	Розробка UML діаграми діяльності для серверної частини
+     Ініціалізація системи починається із запуску сервера, який забезпечує основну взаємодію між компонентами. 
+     Під час цього відбувається підключення до бази даних MySQL, яка використовується для збереження та обробки даних, а також підключення до брокера, через який здійснюється обмін інформацією із IoT-пристроями. 
+     Після успішного встановлення з'єднання завантажуються маршрути API, що надають REST-запити для управління користувачами, акваріумами, пристроями, сенсорами та логами.
+     Коли сервер готовий, він починає обробку MQTT-повідомлень від IoT-пристроїв. Дані від сенсорів передаються серверу, після чого вони оновлюються у базі даних. Якщо отримані показники виходять за межі допустимого діапазону, система активує відповідний пристрій для корекції параметрів. Після цього сервер реєструє лог події, який зберігає інформацію про зміну стану пристрою та сенсора. Після стабілізації значення пристрій вимикається, завершуючи процес корекції.
+     Паралельно сервер обробляє REST-запити, які надходять до різних маршрутів API, таких як /users, /aquariums, /devices, /sensors, /logs. Ці маршрути дозволяють адміністраторам і користувачам виконувати CRUD-операції, отримувати доступ до інформації про стан системи або реєструвати нові пристрої та сенсори. У разі помилок або некоректних запитів сервер повертає відповідні повідомлення.
+     Система також аналізує отримані дані для виявлення трендів, які можуть сигналізувати про майбутні відхилення від норми, наприклад, поступове зниження рівня кисню. Усі події та дії записуються в логах, що забезпечує прозорість роботи системи та можливість ретроспективного аналізу. Сервер виконує функцію синхронізації між фізичними IoT-пристроями та цифровою базою даних, забезпечуючи точність відображення поточного стану акваріума. Для забезпечення енергоефективності пристрої працюють лише тоді, коли це необхідно, а їхній статус постійно моніториться сервером. 
+     На завершальному етапі сервер переходить у стан очікування, готовий до обробки нових MQTT-повідомлень від IoT-пристроїв або REST-запитів від користувачів. Така організація забезпечує безперебійну роботу системи, її адаптивність і ефективність у виконанні завдань моніторингу та управління акваріумами.
+
+Рисунок 3.1 - UML діаграма діяльності для серверної частини
+3.2.4	Розробка UML діаграми взаємодії для серверної частини
+     Запити від клієнта до серверу в системі AquaSense реалізуються через REST API, який забезпечує основну взаємодію між клієнтським інтерфейсом і серверною частиною. Коли клієнт надсилає запити, сервер виконує обробку цих запитів, звертаючись до бази даних для отримання чи оновлення відповідної інформації. Усі дані, включаючи інформацію про сенсори, пристрої та логи, централізовано зберігаються в базі даних, що дозволяє забезпечувати цілісність даних і швидкий доступ до них. Після обробки сервер відповідає клієнту результатами виконаних операцій або необхідними даними.
+     Система також інтегрована з MQTT-брокером, що забезпечує обмін даними між сервером і IoT-пристроями. Сервер отримує дані від сенсорів через MQTT у вигляді повідомлень. Якщо значення, отримане від сенсора, виходить за межі встановлених норм, сервер надсилає відповідну команду на пристрій через MQTT для виправлення параметра. 
+     У процесі роботи сервер:
+- Аналізує отримані значення сенсора;
+- Увімкнувши пристрій для корекції, оновлює поточні значення в базі даних;
+- Логує всі події, зокрема зміни параметрів і станів пристроїв;
+- Після стабілізації параметра сервер надсилає команду вимкнути пристрій.
+     Після виконання зазначених дій, сервер забезпечує доступ клієнту до актуальних даних про стан сенсорів, пристроїв та журналів подій. Така інтеграція REST API та MQTT дозволяє AquaSense функціонувати як централізована автоматизована система, яка надає як оперативні дані, так і історичну інформацію для аналізу та управління.
+
+Рисунок 3.2 - UML діаграма взаємодії для серверної частини
+
+3.3	Висновки
+     У процесі виконання роботи було реалізовано бізнес-логіку та функції адміністрування серверної частини програмної системи. Здійснено підключення до бази даних, налаштовано маршрути API для обробки запитів, а також організовано інтеграцію з MQTT-брокером для взаємодії з IoT-пристроями. Система успішно обробляє дані сенсорів, автоматично коригує значення у випадку відхилень та зберігає логи для подальшого аналізу. Реалізовані рішення забезпечують ефективну та стабільну роботу програмної системи відповідно до поставленої мети.
+     
+     
+     
+     
+     
+     
+     
+     
+   
+     ДОДАТОК А
+     Адміністрування
+
+     Код контролера для управління акваріумами
+     
+     1. const express = require('express');
+     2. const router = express.Router();
+     3. const db = require('../config/db');
+     4. 
+     5. // Отримати всі акваріуми
+     6. router.get('/', async (req, res) => {
+     7.     try {
+     8.         const [aquariums] = await db.query('SELECT * FROM Aquariums');
+     9.         res.json({ success: true, aquariums });
+     10.     } catch (error) {
+     11.         console.error('Error fetching aquariums:', error);
+     12.         res.status(500).json({ success: false, error: error.message });
+     13.     }
+     14. });
+     15. 
+     16. // Отримати конкретний акваріум за ID
+     17. router.get('/:id', async (req, res) => {
+     18.     const aquariumId = req.params.id;
+     19. 
+     20.     try {
+     21.         const [aquarium] = await db.query('SELECT * FROM Aquariums WHERE id = ?', [aquariumId]);
+     22.         if (aquarium.length === 0) {
+     23.             return res.status(404).json({ success: false, message: 'Aquarium not found' });
+     24.         }
+     25.         res.json({ success: true, aquarium: aquarium[0] });
+     26.     } catch (error) {
+     27.         console.error('Error fetching aquarium:', error);
+     28.         res.status(500).json({ success: false, error: error.message });
+     29.     }
+     30. });
+     31. 
+     32. // Отримати всі акваріуми для конкретного користувача
+     33. router.get('/user/:userId', async (req, res) => {
+     34.     const userId = req.params.userId;
+     35. 
+     36.     try {
+     37.         const [aquariums] = await db.query('SELECT * FROM Aquariums WHERE user_id = ?', [userId]);
+     38.         res.json({ success: true, aquariums });
+     39.     } catch (error) {
+     40.         console.error('Error fetching user aquariums:', error);
+     41.         res.status(500).json({ success: false, error: error.message });
+     42.     }
+     43. });
+     44. 
+     45. // Створити новий акваріум
+     46. router.post('/', async (req, res) => {
+     47.     const { user_id, name, specification } = req.body;
+     48. 
+     49.     try {
+     50.         const [result] = await db.query('INSERT INTO Aquariums (user_id, name, specification) VALUES (?, ?, ?)', [
+     51.             user_id,
+     52.             name,
+     53.             specification,
+     54.         ]);
+     55.         res.status(201).json({ success: true, message: 'Aquarium created successfully', aquariumId: result.insertId });
+     56.     } catch (error) {
+     57.         console.error('Error creating aquarium:', error);
+     58.         res.status(500).json({ success: false, error: error.message });
+     59.     }
+     60. });
+     61. 
+     62. // Оновити інформацію про акваріум
+     63. router.put('/:id', async (req, res) => {
+     64.     const aquariumId = req.params.id;
+     65.     const { name, specification } = req.body;
+     66. 
+     67.     try {
+     68.         const [result] = await db.query('UPDATE Aquariums SET name = ?, specification = ? WHERE id = ?', [
+     69.             name,
+     70.             specification,
+     71.             aquariumId,
+     72.         ]);
+     73. 
+     74.         if (result.affectedRows === 0) {
+     75.             return res.status(404).json({ success: false, message: 'Aquarium not found' });
+     76.         }
+     77. 
+     78.         res.json({ success: true, message: 'Aquarium updated successfully' });
+     79.     } catch (error) {
+     80.         console.error('Error updating aquarium:', error);
+     81.         res.status(500).json({ success: false, error: error.message });
+     82.     }
+     83. });
+     84. 
+     85. // Видалити акваріум
+     86. router.delete('/:id', async (req, res) => {
+     87.     const aquariumId = req.params.id;
+     88. 
+     89.     try {
+     90.         const [result] = await db.query('DELETE FROM Aquariums WHERE id = ?', [aquariumId]);
+     91. 
+     92.         if (result.affectedRows === 0) {
+     93.             return res.status(404).json({ success: false, message: 'Aquarium not found' });
+     94.         }
+     95. 
+     96.         res.json({ success: true, message: `Aquarium with ID ${aquariumId} has been deleted` });
+     97.     } catch (error) {
+     98.         console.error('Error deleting aquarium:', error);
+     99.         res.status(500).json({ success: false, error: error.message });
+     100.     }
+     101. });
+     102. 
+     103. module.exports = router;
+     
+     Код контролера для управління пристроями
+     
+     1. const express = require('express');
+     2. const router = express.Router();
+     3. const db = require('../config/db');
+     4. 
+     5. // Отримати всі девайси
+     6. router.get('/', async (req, res) => {
+     7.     try {
+     8.         const [devices] = await db.query('SELECT * FROM Devices');
+     9.         res.json({ success: true, devices });
+     10.     } catch (error) {
+     11.         console.error('Error fetching devices:', error);
+     12.         res.status(500).json({ success: false, error: error.message });
+     13.     }
+     14. });
+     15. 
+     16. // Отримати всі девайси для конкретного акваріуму
+     17. router.get('/aquarium/:aquariumId', async (req, res) => {
+     18.     const aquariumId = req.params.aquariumId;
+     19. 
+     20.     try {
+     21.         const [devices] = await db.query('SELECT * FROM Devices WHERE aquarium_id = ?', [aquariumId]);
+     22.         res.json({ success: true, devices });
+     23.     } catch (error) {
+     24.         console.error('Error fetching devices for aquarium:', error);
+     25.         res.status(500).json({ success: false, error: error.message });
+     26.     }
+     27. });
+     28. 
+     29. // Створити новий девайс
+     30. router.post('/', async (req, res) => {
+     31.     const { aquarium_id, name, status } = req.body;
+     32. 
+     33.     try {
+     34.         const [result] = await db.query('INSERT INTO Devices (aquarium_id, name, status) VALUES (?, ?, ?)', [
+     35.             aquarium_id,
+     36.             name,
+     37.             status || 'off',
+     38.         ]);
+     39.         res.status(201).json({ success: true, message: 'Device created successfully', deviceId: result.insertId });
+     40.     } catch (error) {
+     41.         console.error('Error creating device:', error);
+     42.         res.status(500).json({ success: false, error: error.message });
+     43.     }
+     44. });
+     45. 
+     46. // Отримати конкретний девайс
+     47. router.get('/:id', async (req, res) => {
+     48.   const deviceId = req.params.id;
+     49. 
+     50.   try {
+     51.       // Запит до бази даних для отримання девайса
+     52.       const [device] = await db.query('SELECT * FROM Devices WHERE id = ?', [deviceId]);
+     53. 
+     54.       // Перевірка, чи знайдено девайс
+     55.       if (device.length === 0) {
+     56.           return res.status(404).json({ success: false, message: 'Device not found' });
+     57.       }
+     58. 
+     59.       res.json({ success: true, device: device[0] });
+     60.   } catch (error) {
+     61.       console.error('Error fetching device:', error);
+     62.       res.status(500).json({ success: false, error: error.message });
+     63.   }
+     64. });
+     65. 
+     66. 
+     67. // Оновити інформацію про девайс
+     68. router.put('/:id', async (req, res) => {
+     69.     const deviceId = req.params.id;
+     70.     const { name, status } = req.body;
+     71. 
+     72.     try {
+     73.         const [result] = await db.query('UPDATE Devices SET name = ?, status = ? WHERE id = ?', [
+     74.             name,
+     75.             status,
+     76.             deviceId,
+     77.         ]);
+     78. 
+     79.         if (result.affectedRows === 0) {
+     80.             return res.status(404).json({ success: false, message: 'Device not found' });
+     81.         }
+     82. 
+     83.         res.json({ success: true, message: 'Device updated successfully' });
+     84.     } catch (error) {
+     85.         console.error('Error updating device:', error);
+     86.         res.status(500).json({ success: false, error: error.message });
+     87.     }
+     88. });
+     89. 
+     90. // Видалити девайс
+     91. router.delete('/:id', async (req, res) => {
+     92.     const deviceId = req.params.id;
+     93. 
+     94.     try {
+     95.         const [result] = await db.query('DELETE FROM Devices WHERE id = ?', [deviceId]);
+     96. 
+     97.         if (result.affectedRows === 0) {
+     98.             return res.status(404).json({ success: false, message: 'Device not found' });
+     99.         }
+     100. 
+     101.         res.json({ success: true, message: `Device with ID ${deviceId} has been deleted` });
+     102.     } catch (error) {
+     103.         console.error('Error deleting device:', error);
+     104.         res.status(500).json({ success: false, error: error.message });
+     105.     }
+     106. });
+     107. 
+     108. module.exports = router;
+
+     Код контролера для управління сенсорами
+     
+     1. const express = require("express");
+     2. const router = express.Router();
+     3. const db = require("../config/db");
+     4. 
+     5. // Отримати всі датчики
+     6. router.get("/", async (req, res) => {
+     7.   try {
+     8.     const [sensors] = await db.query("SELECT * FROM Sensors");
+     9.     res.json({ success: true, sensors });
+     10.   } catch (error) {
+     11.     console.error("Error fetching sensors:", error);
+     12.     res.status(500).json({ success: false, error: error.message });
+     13.   }
+     14. });
+     15. 
+     16. // Отримати всі датчики для конкретного акваріуму
+     17. router.get("/aquarium/:aquariumId", async (req, res) => {
+     18.   const aquariumId = req.params.aquariumId;
+     19. 
+     20.   try {
+     21.     const [sensors] = await db.query(
+     22.       "SELECT * FROM Sensors WHERE aquarium_id = ?",
+     23.       [aquariumId]
+     24.     );
+     25.     res.json({ success: true, sensors });
+     26.   } catch (error) {
+     27.     console.error("Error fetching sensors for aquarium:", error);
+     28.     res.status(500).json({ success: false, error: error.message });
+     29.   }
+     30. });
+     31. 
+     32. router.get("/:id", async (req, res) => {
+     33.   const sensorId = req.params.id;
+     34. 
+     35.   try {
+     36.     const [sensor] = await db.query("SELECT * FROM Sensors WHERE id = ?", [
+     37.       sensorId,
+     38.     ]);
+     39.     if (sensor.length === 0) {
+     40.       return res
+     41.         .status(404)
+     42.         .json({ success: false, message: "Sensor not found" });
+     43.     }
+     44.     res.json({ success: true, sensor: sensor[0] });
+     45.   } catch (error) {
+     46.     console.error("Error fetching sensor by ID:", error);
+     47.     res.status(500).json({ success: false, error: error.message });
+     48.   }
+     49. });
+     50. 
+     51. // Створити новий датчик
+     52. router.post("/", async (req, res) => {
+     53.   const { aquarium_id, type, value } = req.body;
+     54. 
+     55.   try {
+     56.     const [result] = await db.query(
+     57.       "INSERT INTO Sensors (aquarium_id, type, value) VALUES (?, ?, ?)",
+     58.       [aquarium_id, type, value]
+     59.     );
+     60.     res.status(201).json({
+     61.       success: true,
+     62.       message: "Sensor created successfully",
+     63.       sensorId: result.insertId,
+     64.     });
+     65.   } catch (error) {
+     66.     console.error("Error creating sensor:", error);
+     67.     res.status(500).json({ success: false, error: error.message });
+     68.   }
+     69. });
+     70. 
+     71. // Оновити інформацію про датчик
+     72. router.put("/:id", async (req, res) => {
+     73.   const sensorId = req.params.id;
+     74.   const { type, value } = req.body;
+     75. 
+     76.   try {
+     77.     const [result] = await db.query(
+     78.       "UPDATE Sensors SET type = ?, value = ? WHERE id = ?",
+     79.       [type, value, sensorId]
+     80.     );
+     81. 
+     82.     if (result.affectedRows === 0) {
+     83.       return res
+     84.         .status(404)
+     85.         .json({ success: false, message: "Sensor not found" });
+     86.     }
+     87. 
+     88.     res.json({ success: true, message: "Sensor updated successfully" });
+     89.   } catch (error) {
+     90.     console.error("Error updating sensor:", error);
+     91.     res.status(500).json({ success: false, error: error.message });
+     92.   }
+     93. });
+     94. 
+     95. // Видалити датчик
+     96. router.delete("/:id", async (req, res) => {
+     97.   const sensorId = req.params.id;
+     98. 
+     99.   try {
+     100.     const [result] = await db.query("DELETE FROM Sensors WHERE id = ?", [
+     101.       sensorId,
+     102.     ]);
+     103. 
+     104.     if (result.affectedRows === 0) {
+     105.       return res
+     106.         .status(404)
+     107.         .json({ success: false, message: "Sensor not found" });
+     108.     }
+     109. 
+     110.     res.json({
+     111.       success: true,
+     112.       message: `Sensor with ID ${sensorId} has been deleted`,
+     113.     });
+     114.   } catch (error) {
+     115.     console.error("Error deleting sensor:", error);
+     116.     res.status(500).json({ success: false, error: error.message });
+     117.   }
+     118. });
+     119. 
+     120. // Оновити значення датчика
+     121. router.patch("/:id/value", async (req, res) => {
+     122.   const sensorId = req.params.id;
+     123.   const { value } = req.body;
+     124. 
+     125.   try {
+     126.     const [result] = await db.query(
+     127.       "UPDATE Sensors SET value = ? WHERE id = ?",
+     128.       [value, sensorId]
+     129.     );
+     130. 
+     131.     if (result.affectedRows === 0) {
+     132.       return res
+     133.         .status(404)
+     134.         .json({ success: false, message: "Sensor not found" });
+     135.     }
+     136. 
+     137.     res.json({ success: true, message: "Sensor value updated successfully" });
+     138.   } catch (error) {
+     139.     console.error("Error updating sensor value:", error);
+     140.     res.status(500).json({ success: false, error: error.message });
+     141.   }
+     142. });
+     143. 
+     144. module.exports = router;
+     
+     Код контролера для управління логами
+     
+     1. const express = require("express");
+     2. const router = express.Router();
+     3. const db = require("../config/db");
+     4. 
+     5. // Отримати всі логи
+     6. router.get("/", async (req, res) => {
+     7.   try {
+     8.     const [logs] = await db.query("SELECT * FROM Logs");
+     9.     res.json({ success: true, logs });
+     10.   } catch (error) {
+     11.     console.error("Error fetching logs:", error);
+     12.     res.status(500).json({ success: false, error: error.message });
+     13.   }
+     14. });
+     15. 
+     16. // Отримати всі логи для конкретного датчика
+     17. router.get("/sensor/:sensorId", async (req, res) => {
+     18.   const sensorId = req.params.sensorId;
+     19. 
+     20.   try {
+     21.     const [logs] = await db.query("SELECT * FROM Logs WHERE sensor_id = ?", [
+     22.       sensorId,
+     23.     ]);
+     24.     res.json({ success: true, logs });
+     25.   } catch (error) {
+     26.     console.error("Error fetching logs for sensor:", error);
+     27.     res.status(500).json({ success: false, error: error.message });
+     28.   }
+     29. });
+     30. 
+     31. // Створити новий лог
+     32. router.post("/", async (req, res) => {
+     33.   const { sensor_id, message } = req.body;
+     34. 
+     35.   try {
+     36.     const [result] = await db.query(
+     37.       "INSERT INTO Logs (sensor_id, message) VALUES (?, ?)",
+     38.       [sensor_id, message]
+     39.     );
+     40.     res
+     41.       .status(201)
+     42.       .json({
+     43.         success: true,
+     44.         message: "Log created successfully",
+     45.         logId: result.insertId,
+     46.       });
+     47.   } catch (error) {
+     48.     console.error("Error creating log:", error);
+     49.     res.status(500).json({ success: false, error: error.message });
+     50.   }
+     51. });
+     52. 
+     53. // Знайти лог за ID
+     54. router.get("/:id", async (req, res) => {
+     55.   const logId = req.params.id;
+     56. 
+     57.   try {
+     58.     const [log] = await db.query("SELECT * FROM Logs WHERE id = ?", [logId]);
+     59.     if (log.length === 0) {
+     60.       return res.status(404).json({ success: false, message: "Log not found" });
+     61.     }
+     62.     res.json({ success: true, log: log[0] });
+     63.   } catch (error) {
+     64.     console.error("Error fetching log by ID:", error);
+     65.     res.status(500).json({ success: false, error: error.message });
+     66.   }
+     67. });
+     68. 
+     69. // Видалити всі логи для конкретного датчика
+     70. router.delete("/sensor/:sensorId", async (req, res) => {
+     71.   const sensorId = req.params.sensorId;
+     72. 
+     73.   try {
+     74.     const [result] = await db.query("DELETE FROM Logs WHERE sensor_id = ?", [
+     75.       sensorId,
+     76.     ]);
+     77. 
+     78.     if (result.affectedRows === 0) {
+     79.       return res
+     80.         .status(404)
+     81.         .json({ success: false, message: "No logs found for this sensor" });
+     82.     }
+     83. 
+     84.     res.json({
+     85.       success: true,
+     86.       message: `All logs for sensor ID ${sensorId} have been deleted`,
+     87.     });
+     88.   } catch (error) {
+     89.     console.error("Error deleting logs for sensor:", error);
+     90.     res.status(500).json({ success: false, error: error.message });
+     91.   }
+     92. });
+     93. 
+     94. // Видалити конкретний лог
+     95. router.delete("/:id", async (req, res) => {
+     96.   const logId = req.params.id;
+     97. 
+     98.   try {
+     99.     const [result] = await db.query("DELETE FROM Logs WHERE id = ?", [logId]);
+     100. 
+     101.     if (result.affectedRows === 0) {
+     102.       return res.status(404).json({ success: false, message: "Log not found" });
+     103.     }
+     104. 
+     105.     res.json({
+     106.       success: true,
+     107.       message: `Log with ID ${logId} has been deleted`,
+     108.     });
+     109.   } catch (error) {
+     110.     console.error("Error deleting log:", error);
+     111.     res.status(500).json({ success: false, error: error.message });
+     112.   }
+     113. });
+     114. 
+     115. module.exports = router;
+
+     
