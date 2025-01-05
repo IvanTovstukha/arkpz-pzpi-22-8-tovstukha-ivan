@@ -65,17 +65,17 @@ git clone https://github.com/NureTovstukhaIvan/AquaSense.git
 
 Встановіть необхідні залежності:
 
-      ```bash
+ ```bash
 
-      cd AquaSense
-      npm install
-      npm install express
-      npm install --save-dev nodemon
-      npm install mysql2
-      npm install mqtt
-      npm install swagger-ui-express
+cd AquaSense
+npm install
+npm install express
+npm install --save-dev nodemon
+npm install mysql2
+npm install mqtt
+npm install swagger-ui-express
 
-      ```
+ ```
 
 Створіть базу даних у MySQL:
 
