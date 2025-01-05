@@ -1,73 +1,123 @@
-# Автосистема - Документація API
+# AquaSense - Документація API
 
 ## Опис проєкту
 
-Автосистема – це програмна система для моніторингу стану автомобілів з використанням IoT сенсорів. Система надає можливість користувачам відслідковувати технічний стан своїх автомобілів, отримувати сповіщення про необхідність технічного обслуговування та інші важливі оновлення через мобільний додаток або веб-інтерфейс. Користувачі можуть бути розподілені за ролями (користувач або адміністратор), що визначає доступ до певних функцій системи.
+AquaSense – це програмна система для автоматизації моніторингу та управління акваріумами. Система дозволяє користувачам стежити за параметрами акваріумної води (температура, рівень кисню, pH), автоматично включати/вимикати пристрої для регулювання цих параметрів (термостат, аератор, контролер pH) та зберігати журнали змін. Симуляція сенсорів і пристроїв виконується за допомогою IoT-системи, а дані зберігаються у базі даних.
 
 ## Функціонал
 
 ### Авторизація
-- Реалізована авторизація за допомогою JWT токенів.
-- Токени зберігаються у HTTP cookie при успішній авторизації.
-- Маршрути для входу (login) та виходу (logout).
 
-### Користувачі
 - Реєстрація та авторизація користувачів.
-- Перегляд профілю користувача.
-- Можливість для адміністратора переглядати список усіх користувачів.
+- Маршрути для входу та перегляду профілю користувача.
 
-### Автомобілі
-- Додавання та видалення автомобілів.
-- Перегляд списку автомобілів користувача.
-  
-### Обслуговування
-- Додавання записів про технічне обслуговування.
-- Перегляд історії обслуговування автомобілів.
+### Акваріуми
 
-### Сповіщення
-- Оповіщення про необхідність технічного обслуговування та інші важливі події.
+- Створення, оновлення та видалення акваріумів.
+- Отримання списку акваріумів для користувача.
 
-### Адміністративні функції
-- Керування ролями користувачів (адміністратор може змінювати ролі користувачів).
+### Сенсори
+
+- Моніторинг параметрів акваріумної води (температура, рівень кисню, pH).
+- Оновлення значень сенсорів у базі даних.
+
+### Пристрої
+
+- Автоматичне ввімкнення/вимкнення пристроїв при відхиленні параметрів від норми.
+- Відображення поточного статусу пристроїв.
+
+### Журнали
+
+- Зберігання логів змін параметрів та роботи пристроїв.
+- Отримання історії змін для кожного сенсора.
+
+### Інтеграція IoT
+
+- Симуляція сенсорів і пристроїв через MQTT.
+- Стан сенсорів і пристроїв синхронізується з базою даних у реальному часі.
 
 ## Технології
 
 - **Платформа**: Node.js
 - **Мова програмування**: JavaScript (ES6+)
-- **СУБД**: MongoDB
-- **ORM**: Mongoose
-- **Автентифікація**: JWT
+- **СУБД**: MySQL
+- **IoT**: Wokwi (симуляція ESP32, MQTT-брокер Mosquitto)
+- **Фреймворк**: Express.js
 - **Документація API**: Swagger
-- **Мобільний додаток**: Kotlin
 
 ## Вимоги
 
 ### Середовище виконання:
+
 - Node.js версія 16 або вище.
-- MongoDB.
+- MySQL.
 
 ### Бібліотеки та залежності:
+
 - `express`: для створення серверних маршрутів.
-- `mongoose`: для роботи з MongoDB.
-- `jsonwebtoken`: для генерації та перевірки JWT токенів.
+- `mysql2`: для роботи з MySQL.
+- `mqtt`: для інтеграції з MQTT-брокером.
 - `cookie-parser`: для роботи з cookies.
-- `swagger-jsdoc` і `swagger-ui-express`: для документування API через Swagger.
-- `dotenv`: для зберігання конфіденційних даних (наприклад, секрети JWT).
+- `bcrypt`: для хешування паролів користувачів.
+- `swagger-ui-express`: для документування API.
 
 ## Налаштування
 
 1. **Налаштування бази даних**
-   - Створіть базу даних MongoDB та підключіть її до вашої програми за допомогою Mongoose.
-   - Для підключення вкажіть строку підключення в файлі `.env`:
-     ```
-     MONGODB_URI=mongodb://your_database_url
-     ```
+   - Створіть базу даних MySQL з назвою AquaSense.
+   - Використовуйте SQL-скрипт для створення таблиць:
+   ```
+CREATE TABLE Users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
-2. **Налаштування JWT**
-   - Встановіть секрет для підпису JWT у файлі `.env`:
-     ```
-     JWT_SECRET=your_jwt_secret_key
-     ```
+CREATE TABLE Aquariums (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    specification VARCHAR(100),
+    capacity DECIMAL(10, 2) NOT NULL, -- Ємність акваріуму в літрах
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE Sensors (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    aquarium_id INT NOT NULL,
+    type VARCHAR(255) NOT NULL,
+    value DECIMAL(10, 2) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (aquarium_id) REFERENCES Aquariums(id) ON DELETE CASCADE
+);
+
+CREATE TABLE Logs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    sensor_id INT NOT NULL,
+    message VARCHAR(255),
+    logged_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (sensor_id) REFERENCES Sensors(id) ON DELETE CASCADE
+);
+
+CREATE TABLE Devices (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    aquarium_id INT NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    status ENUM('on', 'off') DEFAULT 'off',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (aquarium_id) REFERENCES Aquariums(id) ON DELETE CASCADE
+);
+   ```
+
+2. **Налаштування MQTT**
+   Використовуйте публічний брокер MQTT: test.mosquitto.org.
+   Теми MQTT:
+
+   - Для сенсорів: aquarium/sensor/temperature, aquarium/sensor/oxygen, aquarium/sensor/ph.
+   - Для пристроїв: aquarium/device/control.
 
 3. **Налаштування Swagger**
    - Для автоматичної генерації документації API за допомогою Swagger, налаштуйте `swagger-jsdoc` і `swagger-ui-express`.
@@ -75,53 +125,148 @@
 ## Використання
 
 ### Запуск серверу
+
 1. Клонувати репозиторій:
    ```bash
-   git clone https://github.com/NureHurovIvan/arkpz-pzpi-22-8-hurov-ivan.git
+   git clone https://github.com/NureTovstukhaIvan/AquaSense.git
    ```
 2. Перейдіть до директорії проєкту:
    ```
-   cd arkpz-pzpi-22-8-hurov-ivan
+   cd aquasense
    ```
 3. Встановіть залежності:
    ```
    npm install
    ```
 4. Запустіть сервер:
+
 ```
 npm start
 ```
 
 Приклади запитів
 Реєстрація користувача
+
 - Метод: `POST`
-- Маршрут: `/api/users/register`
-- Опис: Реєстрація нового користувача.
+- Маршрут: `/users/register`
+  Тіло запиту:
+
+```
+{
+  "username": "john_doe",
+  "email": "john@example.com",
+  "password": "password123"
+}
+```
 
 Авторизація користувача
-- Метод: `POST`
-- Маршрут: `/api/users/login`
-- Опис: Авторизація користувача та отримання JWT токену.
 
-Додавання автомобіля
 - Метод: `POST`
-- Маршрут: `/api/vehicles`
-- Опис: Додавання нового автомобіля.
+- Маршрут: `/users/login`
+  Тіло запиту:
 
-Видалення автомобіля
-- Метод: `DELETE`
-- Маршрут: `/api/vehicles/:vehicle_id`
-- Опис: Видалення автомобіля за ідентифікатором.
+```
+{
+  "email": "john@example.com",
+  "password": "password123"
+}
+```
 
-Додавання запису обслуговування
+Перегляд профілю користувача
+
 - Метод: `POST`
-- Маршрут: `/api/maintenance`
-- Опис: Додавання запису про технічне обслуговування для автомобіля.
+- Маршрут: `/users/:id`
+
+Додавання акваріума
+
+- Метод: `POST`
+- Маршрут: `/aquariums`
+  Тіло запиту:
+
+```
+{
+  "user_id": 1,
+  "name": "My Aquarium",
+  "location": "Living Room"
+}
+```
+
+Отримання списку акваріумів
+
+- Метод: `GET`
+- Маршрут: `/aquariums/user/:userId`
+
+Отримання всіх сенсорів для акваріума
+
+- Метод: `GET`
+- Маршрут: `/sensors/aquarium/:aquariumId`
+
+Оновлення значення сенсора
+
+- Метод: `PUT`
+- Маршрут: `/sensors/:id`
+  Тіло запиту:
+
+```
+{
+  "value": 26.5
+}
+```
+
+Вмикання пристрою
+
+- Метод: `POST`
+- Маршрут: `/devices/control`
+  Тіло запиту:
+
+```
+{
+  "device_name": "thermostat",
+  "action": "on"
+}
+```
+
+Вимикання пристрою
+
+- Метод: `POST`
+- Маршрут: `/devices/control`
+  Тіло запиту:
+
+```
+{
+  "device_name": "thermostat",
+  "action": "off"
+}
+```
+
+Отримання списку пристроїв для акваріума
+
+- Метод: `GET`
+- Маршрут: `/devices/aquarium/:aquariumId`
+
+Отримання всіх логів для сенсора
+
+- Метод: `GET`
+- Маршрут: `/logs/sensor/:sensorId`
+
+Створення логу вручну
+
+- Метод: `POST`
+- Маршрут: `/logs`
+  Тіло запиту:
+
+```
+{
+  "sensor_id": 1,
+  "message": "Temperature corrected from 30 to 28"
+}
+```
 
 Примітки
-- Кожен запит до захищених маршрутів повинен містити валідний JWT токен у cookie.
-- Логіка адміністрування реалізована через middleware, що дозволяє адміністратору управляти ролями користувачів.
-  
+
+- MQTT забезпечує взаємодію між сенсорами та пристроями в режимі реального часу.
+- Дисплей на ESP32 синхронізує стан пристроїв і показників сенсорів відповідно до останніх оновлень.
+
 Контакти  
-Розробник: Гуров Іван  
-Email: `ivan.hurov@nure.ua`
+Розробник: Товстуха Іван  
+Email: `ivan.tovstukha@nure.ua`
