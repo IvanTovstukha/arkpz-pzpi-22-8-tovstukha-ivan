@@ -79,17 +79,17 @@ npm install swagger-ui-express
 
 Створіть базу даних у MySQL:
 
-      ```sql
+```sql
 
-      CREATE DATABASE AquaSense;
+CREATE DATABASE AquaSense;
 
-      ```
+```
 
 Імпортуйте таблиці та структуру бази даних:
 
-      ```sql
+```sql
 
-      USE AquaSense;
+USE AquaSense;
 
 CREATE TABLE Users (
 id INT AUTO_INCREMENT PRIMARY KEY,
