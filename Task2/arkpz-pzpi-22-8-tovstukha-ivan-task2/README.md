@@ -76,6 +76,42 @@ AquaSense – це програмна система для автоматиза
     password VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
    );
+   
+   CREATE TABLE Aquariums (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    specification VARCHAR(100),
+    capacity DECIMAL(10, 2) NOT NULL, -- Ємність акваріуму в літрах
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE CASCADE
+   );
+
+   CREATE TABLE Sensors (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    aquarium_id INT NOT NULL,
+    type VARCHAR(255) NOT NULL,
+    value DECIMAL(10, 2) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (aquarium_id) REFERENCES Aquariums(id) ON DELETE CASCADE
+   );
+
+   CREATE TABLE Logs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    sensor_id INT NOT NULL,
+    message VARCHAR(255),
+    logged_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (sensor_id) REFERENCES Sensors(id) ON DELETE CASCADE
+   );
+
+   CREATE TABLE Devices (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    aquarium_id INT NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    status ENUM('on', 'off') DEFAULT 'off',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (aquarium_id) REFERENCES Aquariums(id) ON DELETE CASCADE
+   );
    ```
 
 2. **Налаштування MQTT**
