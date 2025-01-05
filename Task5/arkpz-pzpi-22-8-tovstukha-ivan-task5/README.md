@@ -56,7 +56,9 @@ AquaSense – це програмна система для автоматиза
 Скористайтеся командою:
 
 ```bash
+
 git clone https://github.com/NureTovstukhaIvan/AquaSense.git
+
 ```
 
 ### Крок 2: Налаштування серверної частини
@@ -64,6 +66,7 @@ git clone https://github.com/NureTovstukhaIvan/AquaSense.git
 Встановіть необхідні залежності:
 
       ```bash
+
       cd AquaSense
       npm install
       npm install express
@@ -71,6 +74,7 @@ git clone https://github.com/NureTovstukhaIvan/AquaSense.git
       npm install mysql2
       npm install mqtt
       npm install swagger-ui-express
+
       ```
 
 Створіть базу даних у MySQL:
@@ -78,6 +82,7 @@ git clone https://github.com/NureTovstukhaIvan/AquaSense.git
       ```sql
 
       CREATE DATABASE AquaSense;
+
       ```
 
 Імпортуйте таблиці та структуру бази даних:
@@ -130,7 +135,7 @@ created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 FOREIGN KEY (aquarium_id) REFERENCES Aquariums(id) ON DELETE CASCADE
 );
 
-```
+````
 Налаштуйте конфігурацію бази даних у файлі src/config/db.js:
 ```js
 
@@ -144,15 +149,18 @@ connectionLimit: 10,
 queueLimit: 0
 });
 
-```
+````
 
 ### Крок 3: Запуск серверної частини
+
 Запустіть сервер командою:
+
 ```bash
 
 node index.js
 
 ```
+
 Переконайтеся, що сервер доступний за адресою:
 http://localhost:3000
 Swagger-документація API доступна за адресою:
@@ -162,6 +170,7 @@ http://localhost:3000/api-docs
 
 Відкрийте код IoT у Arduino IDE.
 Налаштуйте параметри підключення:
+
 ```js
 
 const char* ssid = "YOUR_WIFI_SSID";
@@ -169,6 +178,7 @@ const char* password = "YOUR_WIFI_PASSWORD";
 const char\* mqtt_server = "test.mosquitto.org";
 
 ```
+
 Завантажте код на ESP32.
 Переконайтеся, що пристрій успішно підключається до Wi-Fi та брокера MQTT.
 
@@ -176,17 +186,16 @@ const char\* mqtt_server = "test.mosquitto.org";
 
 Додайте акваріум, сенсори та пристрої в базу даних через Swagger або Postman.
 Перевірте взаємодію IoT-пристрою з сервером:
-  - Перевірте значення сенсорів у базі даних після моніторингу.
-  - Переконайтеся, що коригування значень викликає зміну статусу пристроїв.
-  - Логи повинні записуватися в базу даних.
+
+- Перевірте значення сенсорів у базі даних після моніторингу.
+- Переконайтеся, що коригування значень викликає зміну статусу пристроїв.
+- Логи повинні записуватися в базу даних.
 
 ## Ліцензія
 
 Проєкт ліцензований під ліцензією Mit. Apache License 2.0
 
-
 ## Контактна інформація
 
 **Розробник**: Товстуха Іван
 **Email**: ivan.tovstukha@nure.ua
-```
